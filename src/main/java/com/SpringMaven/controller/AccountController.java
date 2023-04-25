@@ -4,6 +4,7 @@ import com.SpringMaven.model.*;
 import com.SpringMaven.service.AccountService;
 import com.SpringMaven.service.JwtService;
 import com.SpringMaven.service.ProductService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import java.util.*;
 
 @RestController
 public class AccountController {
+   public final static Logger logger = Logger.getLogger(AccountController.class);
     @Autowired
     AccountService accountService;
 
@@ -56,6 +58,7 @@ public class AccountController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
             } else {
                 AccountToken accountToken = new AccountToken(token);
+                logger.error("chỗ này có lỗi");
                 return ResponseEntity.ok(accountToken);
             }
         } else {
