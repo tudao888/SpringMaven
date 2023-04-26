@@ -20,6 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 @Configuration 
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
     @Autowired
     AccountService accountService;
 
@@ -37,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().ignoringAntMatchers("/**");
 
-        http.authorizeRequests().antMatchers( "/login", "/register").permitAll()
+        http.authorizeRequests().antMatchers( "/login", "/register", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .and().authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN")
                 .and().authorizeRequests().antMatchers("/user/**").hasRole("USER")
                 .and().authorizeRequests().antMatchers("/provider/**").hasRole("PROVIDER")

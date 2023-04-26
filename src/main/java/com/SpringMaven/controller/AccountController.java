@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -32,43 +33,30 @@ public class AccountController {
     @Autowired
     AuthenticationManager authenticationManager;
 
-    public boolean checkAccount(Account account) {
-        Account accountChecked = accountService.findAccountByUsername(account.getUsername());
-        if (accountChecked != null && account.getPassword().equals(accountChecked.getPassword())) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Account account) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(account.getUsername(), account.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String token = jwtService.createToken(authentication);
-        Account account1 = accountService.findAccountByUsername(account.getUsername());
-
-        if (checkAccount(account)) {
-            if (account1.getStatus() == 2) {
-                ErrorResponse errorResponse = new ErrorResponse("Tài khoản đã bị khóa");
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+        try {
+            if (account.getUsername() == null || account.getUsername().isEmpty() || account.getPassword() == null || account.getPassword().isEmpty()) {
+                return ResponseEntity.badRequest().body("Tên đăng nhập và mật khẩu không được để trống");
             } else {
-                AccountToken accountToken = new AccountToken(token);
-                logger.error("chỗ này có lỗi");
-                return ResponseEntity.ok(accountToken);
+                Authentication authentication = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(account.getUsername(), account.getPassword()));
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                String token = jwtService.createToken(authentication);
+                Account account1 = accountService.findAccountByUsername(account.getUsername());
+                if (account1.getStatus() == 2) {
+                    return ResponseEntity.badRequest().body("Tài khoản của bạn đã bị khóa");
+                } else {
+                    AccountToken accountToken = new AccountToken(token);
+                    return ResponseEntity.ok(accountToken);
+                }
             }
-        } else {
-            ErrorResponse errorResponse = new ErrorResponse("Tên đăng nhập hoặc mật khẩu không đúng");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        } catch (AuthenticationException e) {
+            return ResponseEntity.badRequest().body("Tên đăng nhập hoặc mật khẩu không chính xác");
         }
     }
-
-
-
 
 
     @PostMapping("/register")
