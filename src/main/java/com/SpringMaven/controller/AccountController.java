@@ -37,7 +37,9 @@ public class AccountController {
     public ResponseEntity<?> login(@RequestBody Account account) {
         try {
             if (account.getUsername() == null || account.getUsername().isEmpty() || account.getPassword() == null || account.getPassword().isEmpty()) {
-                return ResponseEntity.badRequest().body("Tên đăng nhập và mật khẩu không được để trống");
+                Object error = "Tên đăng nhập và mật khẩu không được để trống";
+                logger.error(error);
+                return ResponseEntity.badRequest().body(error);
             } else {
                 Authentication authentication = authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(account.getUsername(), account.getPassword()));
@@ -47,17 +49,21 @@ public class AccountController {
                 String token = jwtService.createToken(authentication);
                 Account account1 = accountService.findAccountByUsername(account.getUsername());
                 if (account1.getStatus() == 2) {
-                    return ResponseEntity.badRequest().body("Tài khoản của bạn đã bị khóa");
+                    Object error = "Tài khoản của bạn đã bị khóa";
+                    logger.error(error);
+                    return ResponseEntity.badRequest().body(error);
                 } else {
                     AccountToken accountToken = new AccountToken(token);
+                    logger.info("Lấy token thành công");
                     return ResponseEntity.ok(accountToken);
                 }
             }
         } catch (AuthenticationException e) {
-            return ResponseEntity.badRequest().body("Tên đăng nhập hoặc mật khẩu không chính xác");
+            Object error = "Tên đăng nhập hoặc mật khẩu không chính xác";
+            logger.error(error);
+            return ResponseEntity.badRequest().body(error);
         }
     }
-
 
     @PostMapping("/register")
     public ResponseEntity<Account> register(@RequestBody Account account) {

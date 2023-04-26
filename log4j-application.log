@@ -6,4 +6,9 @@
   2023-04-26 09:16:34 INFO  AccountController:62 - lấy token thành công
   2023-04-26 09:16:39 INFO  AccountController:62 - lấy token thành công
   2023-04-26 09:28:16 INFO  AccountController:62 - lấy token thành công
+  2023-04-26 09:45:58 ERROR AccountController:41 - Tên đăng nhập và mật khẩu không được để trống
+  2023-04-26 09:54:37 ERROR AccountController:41 - Tên đăng nhập và mật khẩu không được để trống
+  2023-04-26 09:54:44 INFO  AccountController:57 - Lấy token thành công
+  2023-04-26 10:00:35 INFO  AccountController:57 - Lấy token thành công
+  2023-04-26 10:23:42 INFO  AccountController:57 - Lấy token thành công
   
