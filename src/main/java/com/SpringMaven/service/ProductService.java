@@ -1,13 +1,15 @@
 package com.SpringMaven.service;
 
+import com.SpringMaven.Exception.FileUploadExceptionAdvice;
+import com.SpringMaven.model.ExcelHelper;
 import com.SpringMaven.model.Product;
 import com.SpringMaven.repository.ProductRepository;
-import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -66,4 +68,15 @@ public class ProductService {
         workbook.close();
         outputStream.close();
     }
+
+
+    public void save(MultipartFile file) {
+        try {
+            List<Product> products = ExcelHelper.excelToProducts(file.getInputStream());
+            productRepository.saveAll(products);
+        } catch (IOException e) {
+            throw new RuntimeException("fail to store excel data: " + e.getMessage());
+        }
+    }
+
 }
